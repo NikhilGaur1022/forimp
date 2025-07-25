@@ -1,0 +1,145 @@
+@import './tactile-3d.css';
+@import './tactile-buttons.css';
+@import './tactile-hero-btn.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-white text-neutral-900;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-source-serif font-semibold leading-tight text-black;
+  }
+  
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl;
+  }
+  
+  h2 {
+    @apply text-3xl md:text-4xl;
+  }
+  
+  h3 {
+    @apply text-2xl md:text-3xl;
+  }
+  
+  h4 {
+    @apply text-xl md:text-2xl;
+  }
+  
+  p {
+    @apply leading-relaxed font-source-sans;
+  }
+  
+  a {
+    @apply text-dental-600 hover:text-dental-700 transition-colors duration-200;
+  }
+}
+
+@layer components {
+  .container-custom {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl;
+  }
+  
+  .btn {
+    @apply inline-flex items-center justify-center rounded-lg px-6 py-3 font-source-sans font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+  
+  .btn-primary {
+    @apply btn bg-dental-600 text-white hover:bg-dental-700 focus:ring-dental-500 border border-dental-600 hover:border-dental-700;
+  }
+  
+  .btn-secondary {
+    @apply btn bg-white text-black border-2 border-black hover:bg-black hover:text-white focus:ring-neutral-500;
+  }
+  
+  .btn-outline {
+    @apply btn bg-transparent text-dental-600 border-2 border-dental-600 hover:bg-dental-600 hover:text-white focus:ring-dental-500;
+  }
+  
+  .card {
+    @apply bg-white rounded-lg overflow-hidden transition-all duration-300 border border-neutral-200;
+  }
+  
+  .card-hover {
+    @apply hover:shadow-xl hover:-translate-y-1 hover:border-dental-600;
+  }
+  
+  .glass {
+    @apply bg-white/95 backdrop-blur-sm shadow-lg rounded-lg border border-neutral-200;
+  }
+  
+  .section-padding {
+    @apply py-12 sm:py-16 md:py-20 lg:py-24;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    @apply hidden;
+  }
+  
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+}
+
+/* Animation classes */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.animate-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hover effects */
+.hover-lift {
+  transition: transform 0.2s ease-in-out;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+/* Parallax elements */
+.parallax {
+  transition: transform 0.1s ease-out;
+}
+
+/* Professional scrollbar styling */
+.navbar-scroll::-webkit-scrollbar {
+  height: 2px;
+  background: transparent;
+}
+
+.navbar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 2px;
+}
+
+.navbar-scroll::-webkit-scrollbar-thumb {
+  background-color: #D7263D; /* dental-600 - professional red */
+  border-radius: 2px;
+}
+
+.navbar-scroll::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Firefox */
+.navbar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #D7263D transparent;
+}

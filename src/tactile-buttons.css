@@ -1,0 +1,52 @@
+/* 3D tactile button effect for .btn, .btn-primary, .btn-secondary, .btn-outline */
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-outline {
+  position: relative;
+  box-shadow: 0 2px 0 0 #D1D5DB, 0 4px 12px 0 rgba(0,0,0,0.04);
+  background-clip: padding-box;
+  transition: box-shadow 0.15s cubic-bezier(.4,2,.6,1), transform 0.12s cubic-bezier(.4,2,.6,1);
+}
+
+.btn:hover,
+.btn-primary:hover,
+.btn-secondary:hover,
+.btn-outline:hover {
+  /* Bulge out: shadow on right and bottom, slight upward movement */
+  box-shadow: 0 4px 0 0 #D1D5DB, 0 8px 24px 0 rgba(0,0,0,0.08);
+  transform: translateY(-2px) scale(1.01);
+}
+
+.btn:active,
+.btn-primary:active,
+.btn-secondary:active,
+.btn-outline:active {
+  /* Press in: shadow shrinks, button moves in */
+  box-shadow: 0 1px 0 0 #D1D5DB, 0 2px 6px 0 rgba(0,0,0,0.04);
+  transform: translateY(2px) scale(0.98);
+}
+
+/* 3D edge highlight: right and bottom */
+.btn::after,
+.btn-primary::after,
+.btn-secondary::after,
+.btn-outline::after {
+  content: '';
+  position: absolute;
+  right: 0; bottom: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow: 2px 2px 0 0 #F3F4F6;
+  opacity: 0.7;
+  z-index: 1;
+  transition: box-shadow 0.15s cubic-bezier(.4,2,.6,1);
+}
+
+.btn:active::after,
+.btn-primary:active::after,
+.btn-secondary:active::after,
+.btn-outline:active::after {
+  box-shadow: 1px 1px 0 0 #F3F4F6;
+}

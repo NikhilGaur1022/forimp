@@ -1,0 +1,11 @@
+To use Lordicon icons, you must load their player script in your HTML. Add this line to your <head> in index.html:
+
+<script src="https://cdn.lordicon.com/lordicon.js"></script>
+
+Example:
+<head>
+  ...
+  <script src="https://cdn.lordicon.com/lordicon.js"></script>
+</head>
+
+This enables the <lord-icon> custom element to render and animate in your React app.

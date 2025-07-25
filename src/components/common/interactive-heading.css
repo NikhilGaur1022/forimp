@@ -1,0 +1,16 @@
+.interactive-heading {
+  isolation: isolate;
+}
+.interactive-heading-glow {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  transition: opacity 0.25s cubic-bezier(.4,2,.6,1);
+  border-radius: inherit;
+}
+@media (prefers-color-scheme: dark) {
+  .interactive-heading-glow {
+    filter: brightness(0.8) saturate(1.2);
+  }
+}
