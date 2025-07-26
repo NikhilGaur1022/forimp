@@ -1,0 +1,315 @@
+/* Premium Button System */
+
+/* Base button styles */
+.btn {
+  @apply inline-flex items-center justify-center rounded-xl px-6 py-3 font-medium transition-all duration-300 ease-out;
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+  font-size: 0.9375rem;
+  letter-spacing: 0.025em;
+  position: relative;
+  overflow: hidden;
+  transform: translateZ(0); /* GPU acceleration */
+  will-change: transform, box-shadow;
+}
+
+/* Primary Button - Premium Red Gradient */
+.btn-primary {
+  background: linear-gradient(135deg, #d62828 0%, #b51717 50%, #9a1515 100%);
+  @apply text-white border-0 focus:ring-dental-500/50;
+  box-shadow: 
+    0 4px 14px rgba(214, 40, 40, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #f18b8b 0%, #e85d5d 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+  border-radius: inherit;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 
+    0 8px 25px rgba(214, 40, 40, 0.35),
+    0 0 20px rgba(214, 40, 40, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary:hover::before {
+  opacity: 0.15;
+}
+
+.btn-primary:hover .btn-text {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 
+    0 3px 10px rgba(214, 40, 40, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.15s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.btn-primary:disabled {
+  background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+  @apply cursor-not-allowed;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: none;
+}
+
+/* Secondary Button - Elegant Outline */
+.btn-secondary {
+  @apply bg-white/80 text-dental-700 border-2 border-dental-200 backdrop-blur-sm;
+  @apply focus:ring-dental-500/50;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-secondary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(214, 40, 40, 0.08) 0%, rgba(181, 23, 23, 0.05) 100%);
+  transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: inherit;
+}
+
+.btn-secondary:hover {
+  @apply border-dental-300 text-dental-800;
+  transform: translateY(-1px) scale(1.01);
+  box-shadow: 
+    0 6px 20px rgba(0, 0, 0, 0.1),
+    0 0 15px rgba(214, 40, 40, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.btn-secondary:hover::before {
+  left: 0;
+}
+
+.btn-secondary:active {
+  transform: translateY(0) scale(0.99);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transition: all 0.15s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.btn-secondary:disabled {
+  @apply bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transform: none;
+}
+
+/* Outline Button - Minimal Elegance */
+.btn-outline {
+  @apply bg-transparent text-dental-600 border-2 border-dental-300;
+  @apply focus:ring-dental-500/50;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-outline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #d62828 0%, #b51717 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+  border-radius: inherit;
+}
+
+.btn-outline:hover {
+  @apply border-dental-500 text-white;
+  transform: translateY(-1px) scale(1.01);
+  box-shadow: 
+    0 6px 20px rgba(214, 40, 40, 0.2),
+    0 0 15px rgba(214, 40, 40, 0.15);
+}
+
+.btn-outline:hover::before {
+  opacity: 1;
+}
+
+.btn-outline:hover .btn-text {
+  position: relative;
+  z-index: 1;
+}
+
+.btn-outline:active {
+  transform: translateY(0) scale(0.99);
+  transition: all 0.15s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Button text wrapper for enhanced animations */
+.btn-text {
+  transition: color 0.3s ease-out;
+  position: relative;
+  z-index: 1;
+}
+
+/* Button sizes */
+.btn-sm {
+  @apply px-4 py-2 text-sm rounded-lg;
+}
+
+.btn-lg {
+  @apply px-8 py-4 text-lg rounded-2xl;
+}
+
+.btn-xl {
+  @apply px-10 py-5 text-xl rounded-2xl;
+}
+
+/* Icon buttons */
+.btn-icon {
+  @apply p-3 rounded-xl;
+}
+
+.btn-icon-sm {
+  @apply p-2 rounded-lg;
+}
+
+.btn-icon-lg {
+  @apply p-4 rounded-2xl;
+}
+
+/* Floating Action Button */
+.btn-fab {
+  @apply fixed bottom-6 right-6 p-4 rounded-full shadow-premium-red;
+  background: linear-gradient(135deg, #d62828 0%, #b51717 100%);
+  @apply text-white;
+  transform: translateZ(0);
+  will-change: transform, box-shadow;
+}
+
+.btn-fab:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 
+    0 12px 30px rgba(214, 40, 40, 0.4),
+    0 0 25px rgba(214, 40, 40, 0.3);
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+.btn-fab:active {
+  transform: translateY(-1px) scale(1.02);
+  transition: all 0.15s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Loading state */
+.btn-loading {
+  @apply cursor-not-allowed;
+  pointer-events: none;
+}
+
+.btn-loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  margin: auto;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Button groups */
+.btn-group {
+  @apply inline-flex rounded-xl shadow-sm;
+}
+
+.btn-group .btn {
+  @apply rounded-none border-r-0;
+}
+
+.btn-group .btn:first-child {
+  @apply rounded-l-xl;
+}
+
+.btn-group .btn:last-child {
+  @apply rounded-r-xl border-r-2;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .btn {
+    @apply px-4 py-2.5 text-sm;
+  }
+  
+  .btn-lg {
+    @apply px-6 py-3 text-base;
+  }
+  
+  .btn-xl {
+    @apply px-8 py-4 text-lg;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .btn-secondary {
+    @apply bg-slate-800/80 text-slate-200 border-slate-600;
+  }
+  
+  .btn-secondary:hover {
+    @apply bg-slate-700/90 text-slate-100 border-slate-500;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .btn {
+    @apply border-2;
+  }
+  
+  .btn-primary {
+    @apply border-dental-800;
+  }
+  
+  .btn-secondary {
+    @apply border-slate-800;
+  }
+}
+
+/* Remove old tactile styles */
+.tactile-3d,
+.tactile-3d--yellow,
+.tactile-3d--white {
+  /* Reset any existing tactile styles */
+  box-shadow: none !important;
+  transform: none !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.tactile-3d::after,
+.tactile-3d--yellow::after,
+.tactile-3d--white::after {
+  display: none !important;
+}

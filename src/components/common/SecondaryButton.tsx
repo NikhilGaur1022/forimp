@@ -5,15 +5,23 @@ interface SecondaryButtonProps {
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   type?: 'button' | 'submit' | 'reset';
   className?: string;
+  disabled?: boolean;
 }
 
-const SecondaryButton: React.FC<SecondaryButtonProps> = ({ children, onClick, type = 'button', className = '' }) => (
+const SecondaryButton: React.FC<SecondaryButtonProps> = ({ 
+  children, 
+  onClick, 
+  type = 'button', 
+  className = '',
+  disabled = false 
+}) => (
   <button
     type={type}
     onClick={onClick}
-    className={`bg-white text-dental-600 border border-dental-600 hover:bg-dental-50 px-6 py-3 rounded-lg transition-colors duration-200 tactile-3d ${className}`}
+    disabled={disabled}
+    className={`btn btn-secondary ${className}`}
   >
-    {children}
+    <span className="btn-text">{children}</span>
   </button>
 );
 

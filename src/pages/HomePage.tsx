@@ -112,41 +112,44 @@ const HomePage = () => {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative pt-10 pb-32 md:pt-16 md:pb-40 overflow-hidden bg-gradient-to-br from-dental-50 to-white">
+      <section className="hero-section relative pt-10 pb-32 md:pt-16 md:pb-40 overflow-hidden">
         <div className="absolute inset-0 z-0 overflow-hidden">
-          <div className="absolute right-0 top-0 w-1/2 h-full opacity-10 bg-dental-500 rounded-bl-full"></div>
-          <div className="absolute left-0 bottom-0 w-1/3 h-2/3 opacity-5 bg-dental-700 rounded-tr-full"></div>
+          <div className="absolute right-0 top-0 w-1/2 h-full opacity-5 bg-gradient-to-bl from-dental-500 to-dental-600 rounded-bl-[100px]"></div>
+          <div className="absolute left-0 bottom-0 w-1/3 h-2/3 opacity-3 bg-gradient-to-tr from-dental-700 to-dental-800 rounded-tr-[80px]"></div>
+          
+          {/* Floating elements */}
+          <div className="absolute top-20 right-20 w-32 h-32 bg-dental-200/20 rounded-full blur-2xl float-element"></div>
+          <div className="absolute bottom-32 left-32 w-24 h-24 bg-dental-300/20 rounded-full blur-xl float-element"></div>
         </div>
         
         <div className="container-custom relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="hero-content grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
               className="text-center lg:text-left"
             >
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 leading-tight mb-6">
-                <span className="text-dental-600">Build Authority.</span><br />
-                <span className="text-dental-700">Gain Recognition.</span><br />
-                <span className="text-dental-800">Share Knowledge.</span>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+                <span className="gradient-text-red">Build Authority.</span><br />
+                <span className="text-slate-800">Gain Recognition.</span><br />
+                <span className="text-slate-900">Share Knowledge.</span>
               </h1>
-              <p className="text-lg text-neutral-700 mb-8 max-w-xl mx-auto lg:mx-0">
+              <p className="text-lg text-slate-600 mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
                 Join the world's first all-in-one digital platform exclusively for dental professionals. Connect, learn, and grow with peers around the globe.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
                 {!isAuthenticated && (
                   <RouterLink
                     to="/register"
-                    className="btn-primary tactile-3d px-8 py-3 text-base text-white focus:outline-none focus:ring-2 focus:ring-dental-500 focus:ring-offset-2 hover:text-white active:text-white"
-                    style={{ minWidth: 180, fontSize: '1.15rem', letterSpacing: '0.01em' }}
+                    className="btn btn-primary btn-lg"
                   >
-                    Join DentalReach
+                    <span className="btn-text">Join DentalReach</span>
                   </RouterLink>
                 )}
-                <RouterLink to="/articles" className="group flex items-center text-dental-700 font-medium">
+                <RouterLink to="/articles" className="link-elegant group flex items-center text-dental-600 font-medium text-lg">
                   Explore Articles
-                  <ChevronRight className="h-5 w-5 ml-1 transition-transform group-hover:translate-x-1" />
+                  <ChevronRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />
                 </RouterLink>
               </div>
             </motion.div>
@@ -155,13 +158,16 @@ const HomePage = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.7, delay: 0.3 }}
-              className="rounded-3xl overflow-hidden shadow-xl"
+              className="relative"
             >
+              <div className="absolute inset-0 bg-gradient-to-br from-dental-500/20 to-dental-700/20 rounded-3xl blur-xl transform rotate-3"></div>
+              <div className="relative rounded-3xl overflow-hidden shadow-premium border border-white/20">
               <img 
                 src="https://images.pexels.com/photos/3845810/pexels-photo-3845810.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" 
                 alt="Dental professionals collaborating" 
-                className="w-full h-auto object-cover"
+                className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-700"
               />
+              </div>
             </motion.div>
           </div>
           
@@ -171,7 +177,7 @@ const HomePage = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 text-center"
+            className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-20"
           >
             {[
               { label: 'Dental Professionals', value: '75,000+' },
@@ -179,25 +185,35 @@ const HomePage = () => {
               { label: 'Countries Reached', value: '140+' },
               { label: 'Years of Excellence', value: '7+' }
             ].map((stat, i) => (
-              <AnimatedStat key={i} value={stat.value} label={stat.label} />
+              <motion.div
+                key={i}
+                variants={itemVariants}
+                className="stats-card text-center"
+              >
+                <div className="stats-card-value mb-2">
+                  <AnimatedStat value={stat.value} label="" />
+                </div>
+                <div className="stats-card-label">{stat.label}</div>
+              </motion.div>
             ))}
           </motion.div>
         </div>
       </section>
       
       {/* Featured Sections */}
-      <section className="pt-8 md:pt-12 pb-16 md:pb-24 bg-white">
+      <section className="section-padding bg-white">
         <div className="container-custom">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
+          <div className="section-header">
+            <h2 className="section-title">
               Discover Our <span className="text-dental-600">Featured Sections</span>
             </h2>
-            <p className="text-lg text-neutral-700 max-w-3xl mx-auto">
+            <div className="section-divider"></div>
+            <p className="section-subtitle">
               DentalReach offers a comprehensive ecosystem of resources, connections, and opportunities for dental professionals.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 stagger-container animate">
             {[
               { 
                 icon: <BookOpen className="h-8 w-8 text-dental-600" />,
@@ -242,14 +258,14 @@ const HomePage = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
                 viewport={{ once: true }}
-                className="card p-6 border border-neutral-100 shadow-sm hover:shadow-md transition-shadow"
+                className="feature-card stagger-item"
               >
-                <div className="bg-dental-50 rounded-full w-16 h-16 flex items-center justify-center mb-6">
+                <div className="feature-card-icon">
                   {feature.icon}
                 </div>
-                <h3 className="text-xl font-semibold mb-3 text-neutral-900">{feature.title}</h3>
-                <p className="text-neutral-600 mb-4">{feature.description}</p>
-                <RouterLink to={feature.link} className="text-dental-600 font-medium flex items-center hover:text-dental-700 transition-colors">
+                <h3 className="text-xl font-semibold mb-4 text-slate-900">{feature.title}</h3>
+                <p className="text-slate-600 mb-6 leading-relaxed">{feature.description}</p>
+                <RouterLink to={feature.link} className="link-elegant text-dental-600 font-medium flex items-center justify-center">
                   Explore <ChevronRight className="h-4 w-4 ml-1" />
                 </RouterLink>
               </motion.div>
