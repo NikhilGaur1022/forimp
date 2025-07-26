@@ -1,6 +1,6 @@
 // src/types/professor.ts
 
-export interface Professor {
+interface Professor {
   // Core profile fields
   id: string;
   role: string;
@@ -35,7 +35,7 @@ export interface Professor {
   updated_at: string;
 }
 
-export interface ProfessorStats {
+interface ProfessorStats {
   id: number;
   professor_id: string;
   articles_published: number;
@@ -46,7 +46,7 @@ export interface ProfessorStats {
   updated_at: string;
 }
 
-export interface Course {
+interface Course {
   id: number;
   title: string;
   description?: string;
@@ -62,7 +62,7 @@ export interface Course {
   updated_at: string;
 }
 
-export interface ProfessorAchievement {
+interface ProfessorAchievement {
   id: number;
   professor_id: string;
   title: string;
@@ -74,7 +74,7 @@ export interface ProfessorAchievement {
   created_at: string;
 }
 
-export interface ProfessorWithStats extends Professor {
+interface ProfessorWithStats extends Professor {
   stats?: ProfessorStats | null;
   achievements?: ProfessorAchievement[];
   courses?: Course[];

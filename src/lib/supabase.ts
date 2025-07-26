@@ -50,7 +50,7 @@ export interface Article {
 }
 
 // Added from old file - was missing export
-export interface Reference {
+interface Reference {
   authors: string[] | string
   title: string
   journal?: string
@@ -62,7 +62,7 @@ export interface Reference {
 }
 
 // Added from old file - was missing export
-export interface Profile {
+interface Profile {
   id: string
   full_name?: string
   email?: string
@@ -82,7 +82,7 @@ export interface Profile {
   updated_at: string
 }
 
-export interface Event {
+interface Event {
   id: number
   title: string
   description?: string
@@ -105,7 +105,7 @@ export interface Event {
   }
 }
 
-export interface EventRegistration {
+interface EventRegistration {
   id: number
   event_id: number
   user_id: string
@@ -115,7 +115,7 @@ export interface EventRegistration {
   created_at: string
 }
 
-export interface VerificationApplication {
+interface VerificationApplication {
   id: number
   user_id: string
   business_name: string
@@ -142,7 +142,7 @@ export interface VerificationApplication {
 }
 
 // Added from old file - was missing this interface
-export interface SellerApplication {
+interface SellerApplication {
   id: number;
   user_id: string;
   business_name: string;
@@ -162,7 +162,7 @@ export interface SellerApplication {
   updated_at: string;
 }
 
-export interface Database {
+interface Database {
   public: {
     Tables: {
       saved_articles: {
@@ -407,15 +407,15 @@ export interface Database {
 }
 
 // Article submission type
-export type ArticleSubmission = Omit<Article, 'id' | 'created_at' | 'is_approved'>;
+type ArticleSubmission = Omit<Article, 'id' | 'created_at' | 'is_approved'>;
 
 // Added from old file - was missing these helper functions
-export const getCurrentUser = async () => {
+const getCurrentUser = async () => {
   const { data: { user } } = await supabase.auth.getUser()
   return user
 }
 
-export const getUserProfile = async (userId: string) => {
+const getUserProfile = async (userId: string) => {
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
@@ -426,10 +426,9 @@ export const getUserProfile = async (userId: string) => {
   return data
 }
 
-export const signOut = async () => {
+const signOut = async () => {
   const { error } = await supabase.auth.signOut()
   if (error) throw error
 }
 
-// Added from old file - was missing this export
-export type { Professor, ProfessorStats, Course, ProfessorAchievement, ProfessorWithStats, ProfessorCardData } from '../types/professor';
+// Added from old file - was missing this export;
