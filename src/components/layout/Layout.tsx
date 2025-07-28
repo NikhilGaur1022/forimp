@@ -1,36 +1,59 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, Outlet } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { useToast } from '../../contexts/ToastContext';
+import { 
+  Menu, 
+  X, 
+  User, 
+  LogOut, 
+  Settings, 
+  Bell, 
+  Search,
+  ChevronDown,
+  BookOpen,
+  Users,
+  Calendar,
+  MessageSquare,
+  Briefcase,
+  ShoppingBag,
+  Home,
+  Plus
+} from 'lucide-react';
 import { supabase } from '../../lib/supabase';
-import { Menu, X, User, LogOut, Settings, Bell, Search } from 'lucide-react';
+import './ProfileDropdownMicrointeractions.css';
 
-interface LayoutProps {
-  children: React.ReactNode;
-}
-
-export default function Layout({ children }: LayoutProps) {
-  const { user, signOut } = useAuth();
-  const { showToast } = useToast();
+const Layout = () => {
+  const { user, logout, isAdmin } = useAuth();
   const location = useLocation();
-  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [notificationCount, setNotificationCount] = useState(0);
 
+  // Enhanced scroll detection with throttling
   useEffect(() => {
+    let ticking = false;
+    
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 10);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Fetch user profile and notifications
   useEffect(() => {
     if (user) {
       fetchUserProfile();
+      fetchNotificationCount();
     }
   }, [user]);
 
@@ -51,85 +74,172 @@ export default function Layout({ children }: LayoutProps) {
     }
   };
 
-  const handleSignOut = async () => {
+  const fetchNotificationCount = async () => {
+    if (!user) return;
+    
     try {
-      await signOut();
-      setIsUserMenuOpen(false);
-      showToast('Signed out successfully', 'success');
-      navigate('/');
+      const { count } = await supabase
+        .from('notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('read', false);
+
+      setNotificationCount(count || 0);
     } catch (error) {
-      showToast('Error signing out', 'error');
+      console.error('Error fetching notification count:', error);
     }
   };
 
+  const handleSignOut = async () => {
+    try {
+      await logout();
+      setIsUserMenuOpen(false);
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.user-dropdown-container')) {
+        setIsUserMenuOpen(false);
+      }
+      if (!target.closest('.mobile-menu-container')) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const navItems = [
-    { name: 'Home', path: '/' },
-    { name: 'Articles', path: '/articles' },
-    { name: 'Professors', path: '/professors' },
-    { name: 'Events', path: '/events' },
-    { name: 'Forum', path: '/forum' },
-    { name: 'Jobs', path: '/jobs' },
-    { name: 'Products', path: '/products' },
+    { name: 'Home', path: '/', icon: Home },
+    { name: 'Articles', path: '/articles', icon: BookOpen },
+    { name: 'Dentists', path: '/dentists', icon: Users },
+    { name: 'Events', path: '/events', icon: Calendar },
+    { name: 'Forum', path: '/forum', icon: MessageSquare },
+    { name: 'Jobs', path: '/jobs', icon: Briefcase },
+    { name: 'Products', path: '/products', icon: ShoppingBag },
   ];
+
+  const getDisplayName = () => {
+    if (userProfile?.full_name) return userProfile.full_name;
+    if (user?.email) return user.email.split('@')[0];
+    return 'User';
+  };
+
+  const getInitials = () => {
+    const name = getDisplayName();
+    return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-red-50/30">
-      {/* Navigation */}
-      <nav className={`premium-navbar ${isScrolled ? 'scrolled' : ''}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <Link to="/" className="flex items-center space-x-2 group">
-              <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center shadow-lg group-hover:shadow-red-200 transition-all duration-300">
-                <span className="text-white font-bold text-sm">D</span>
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
-                DentalHub
-              </span>
-            </Link>
+      {/* Premium Navbar */}
+      <nav className={`navbar-premium ${isScrolled ? 'scrolled' : ''}`}>
+        <div className="navbar-container">
+          {/* Logo */}
+          <Link to="/" className="navbar-logo">
+            <div className="navbar-logo-icon">
+              <span className="text-white font-bold text-lg">DR</span>
+            </div>
+            <span className="navbar-logo-text">DentalReach</span>
+          </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-1">
-              {navItems.map((item) => (
+          {/* Desktop Navigation */}
+          <div className="navbar-nav">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.path || 
+                             (item.path !== '/' && location.pathname.startsWith(item.path));
+              
+              return (
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover-lift ${
-                    location.pathname === item.path
-                      ? 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg'
-                      : 'text-slate-700 hover:text-red-600 hover:bg-red-50/50'
-                  }`}
+                  className={`navbar-link ${isActive ? 'active' : ''}`}
                 >
+                  <Icon className="w-4 h-4 mr-2" />
                   {item.name}
                 </Link>
-              ))}
-            </div>
+              );
+            })}
+          </div>
 
-            {/* Desktop User Menu */}
-            <div className="hidden md:flex items-center space-x-4">
-              <button className="p-2 text-slate-600 hover:text-red-600 transition-colors duration-200 hover-scale">
-                <Search className="w-5 h-5" />
-              </button>
-              
-              {user ? (
-                <div className="relative">
+          {/* Desktop Right Section */}
+          <div className="flex items-center space-x-4">
+            {/* Search Button */}
+            <button className="p-2 rounded-lg text-slate-600 hover:text-dental-600 hover:bg-dental-50/50 transition-all duration-300 icon-hover">
+              <Search className="w-5 h-5" />
+            </button>
+
+            {user ? (
+              <div className="flex items-center space-x-3">
+                {/* Notifications */}
+                <Link
+                  to="/notifications"
+                  className="relative p-2 rounded-lg text-slate-600 hover:text-dental-600 hover:bg-dental-50/50 transition-all duration-300 icon-hover"
+                >
+                  <Bell className="w-5 h-5" />
+                  {notificationCount > 0 && (
+                    <span className="notification-badge">
+                      {notificationCount > 99 ? '99+' : notificationCount}
+                    </span>
+                  )}
+                </Link>
+
+                {/* User Dropdown */}
+                <div className="relative user-dropdown-container">
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-50/50 transition-all duration-200 hover-scale"
+                    className="flex items-center space-x-3 p-2 rounded-xl hover:bg-dental-50/50 transition-all duration-300 group"
                   >
-                    <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center">
-                      <User className="w-4 h-4 text-white" />
+                    <div className="relative">
+                      {userProfile?.avatar_url ? (
+                        <img
+                          src={userProfile.avatar_url}
+                          alt={getDisplayName()}
+                          className="w-8 h-8 rounded-full object-cover border-2 border-white shadow-md"
+                        />
+                      ) : (
+                        <div className="w-8 h-8 bg-gradient-to-br from-dental-600 to-dental-700 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-md">
+                          {getInitials()}
+                        </div>
+                      )}
+                      {userProfile?.is_verified && (
+                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center">
+                          <span className="text-white text-xs">✓</span>
+                        </div>
+                      )}
                     </div>
-                    <span className="text-sm font-medium text-slate-700">
-                      {userProfile?.full_name || user.email?.split('@')[0]}
-                    </span>
+                    <div className="hidden lg:block text-left">
+                      <div className="text-sm font-semibold text-slate-700 group-hover:text-dental-600 transition-colors">
+                        {getDisplayName()}
+                      </div>
+                      <div className="text-xs text-slate-500 capitalize">
+                        {userProfile?.role || 'Member'}
+                      </div>
+                    </div>
+                    <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                   </button>
 
-                  {isUserMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white/95 backdrop-blur-md rounded-xl shadow-xl border border-red-100 py-2 z-50 animate-fade-in">
+                  {/* User Dropdown Menu */}
+                  <div className={`user-dropdown ${isUserMenuOpen ? 'open' : ''}`}>
+                    <div className="p-4 border-b border-slate-100">
+                      <div className="font-semibold text-slate-900">{getDisplayName()}</div>
+                      <div className="text-sm text-slate-500">{user.email}</div>
+                      {userProfile?.specialty && (
+                        <div className="text-xs text-dental-600 mt-1">{userProfile.specialty}</div>
+                      )}
+                    </div>
+                    
+                    <div className="py-2">
                       <Link
                         to="/profile"
-                        className="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-red-50/50 hover:text-red-600 transition-colors duration-200"
+                        className="user-dropdown-item"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
                         <User className="w-4 h-4 mr-3" />
@@ -137,172 +247,245 @@ export default function Layout({ children }: LayoutProps) {
                       </Link>
                       <Link
                         to="/dashboard"
-                        className="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-red-50/50 hover:text-red-600 transition-colors duration-200"
+                        className="user-dropdown-item"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
                         <Settings className="w-4 h-4 mr-3" />
                         Dashboard
                       </Link>
+                      {isAdmin && (
+                        <Link
+                          to="/admin/articles"
+                          className="user-dropdown-item"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          <Settings className="w-4 h-4 mr-3" />
+                          Admin Panel
+                        </Link>
+                      )}
                       <Link
-                        to="/notifications"
-                        className="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-red-50/50 hover:text-red-600 transition-colors duration-200"
+                        to="/submit"
+                        className="user-dropdown-item"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
-                        <Bell className="w-4 h-4 mr-3" />
-                        Notifications
+                        <Plus className="w-4 h-4 mr-3" />
+                        Submit Content
                       </Link>
-                      <hr className="my-2 border-red-100" />
+                    </div>
+                    
+                    <div className="border-t border-slate-100 py-2">
                       <button
                         onClick={handleSignOut}
-                        className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50/50 transition-colors duration-200"
+                        className="user-dropdown-item text-red-600 hover:text-red-700 hover:bg-red-50/70 w-full text-left"
                       >
                         <LogOut className="w-4 h-4 mr-3" />
                         Sign Out
                       </button>
                     </div>
-                  )}
+                  </div>
                 </div>
-              ) : (
-                <div className="flex items-center space-x-3">
-                  <Link
-                    to="/auth/login"
-                    className="px-4 py-2 text-sm font-medium text-slate-700 hover:text-red-600 transition-colors duration-200"
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    to="/auth/register"
-                    className="premium-button-primary text-sm px-4 py-2"
-                  >
-                    Get Started
-                  </Link>
-                </div>
-              )}
-            </div>
+              </div>
+            ) : (
+              <div className="navbar-auth">
+                <Link to="/login" className="navbar-login-btn">
+                  Sign In
+                </Link>
+                <Link to="/register" className="navbar-signup-btn">
+                  Get Started
+                </Link>
+              </div>
+            )}
 
-            {/* Mobile menu button */}
+            {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 text-slate-600 hover:text-red-600 transition-colors duration-200"
+              className={`mobile-menu-btn ${isMenuOpen ? 'open' : ''}`}
             >
               {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden bg-white/95 backdrop-blur-md border-t border-red-100">
-            <div className="px-4 py-4 space-y-2">
-              {navItems.map((item, index) => (
+        {/* Mobile Menu Overlay */}
+        <div className={`mobile-menu-overlay ${isMenuOpen ? 'open' : ''}`} />
+
+        {/* Mobile Menu Drawer */}
+        <div className={`mobile-menu-drawer ${isMenuOpen ? 'open' : ''} mobile-menu-container`}>
+          <div className="mobile-menu-content">
+            {/* Mobile Menu Header */}
+            <div className="mobile-menu-header">
+              <div className="flex items-center space-x-3">
+                <div className="navbar-logo-icon">
+                  <span className="text-white font-bold">DR</span>
+                </div>
+                <span className="navbar-logo-text">DentalReach</span>
+              </div>
+              <button
+                onClick={() => setIsMenuOpen(false)}
+                className="p-2 rounded-lg text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Mobile Navigation Links */}
+            <nav className="mobile-menu-nav">
+              {navItems.map((item, index) => {
+                const Icon = item.icon;
+                const isActive = location.pathname === item.path || 
+                               (item.path !== '/' && location.pathname.startsWith(item.path));
+                
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`mobile-menu-link mobile-menu-item ${isActive ? 'active' : ''}`}
+                    onClick={() => setIsMenuOpen(false)}
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
+                    <Icon className="w-5 h-5 mr-3" />
+                    {item.name}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* Mobile User Section */}
+            {user ? (
+              <div className="mobile-menu-item">
+                <div className="bg-dental-50/50 rounded-xl p-4 mb-4">
+                  <div className="flex items-center space-x-3 mb-3">
+                    {userProfile?.avatar_url ? (
+                      <img
+                        src={userProfile.avatar_url}
+                        alt={getDisplayName()}
+                        className="w-10 h-10 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 bg-gradient-to-br from-dental-600 to-dental-700 rounded-full flex items-center justify-center text-white font-semibold">
+                        {getInitials()}
+                      </div>
+                    )}
+                    <div>
+                      <div className="font-semibold text-slate-900">{getDisplayName()}</div>
+                      <div className="text-sm text-slate-500">{user.email}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Link
+                      to="/profile"
+                      className="block px-3 py-2 rounded-lg text-sm text-slate-700 hover:bg-white/70 transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Profile
+                    </Link>
+                    <Link
+                      to="/dashboard"
+                      className="block px-3 py-2 rounded-lg text-sm text-slate-700 hover:bg-white/70 transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Dashboard
+                    </Link>
+                    <button
+                      onClick={handleSignOut}
+                      className="block w-full text-left px-3 py-2 rounded-lg text-sm text-red-600 hover:bg-red-50/70 transition-colors"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="mobile-menu-auth">
                 <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`block px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 animate-slide-in ${
-                    location.pathname === item.path
-                      ? 'bg-gradient-to-r from-red-500 to-red-600 text-white'
-                      : 'text-slate-700 hover:text-red-600 hover:bg-red-50/50'
-                  }`}
-                  style={{ animationDelay: `${index * 50}ms` }}
+                  to="/login"
+                  className="mobile-menu-login mobile-menu-item"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  {item.name}
+                  Sign In
                 </Link>
-              ))}
-              
-              {user ? (
-                <div className="pt-4 border-t border-red-100 space-y-2">
-                  <Link
-                    to="/profile"
-                    className="block px-4 py-3 rounded-lg text-sm font-medium text-slate-700 hover:text-red-600 hover:bg-red-50/50 transition-colors duration-200"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Profile
-                  </Link>
-                  <Link
-                    to="/dashboard"
-                    className="block px-4 py-3 rounded-lg text-sm font-medium text-slate-700 hover:text-red-600 hover:bg-red-50/50 transition-colors duration-200"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Dashboard
-                  </Link>
-                  <button
-                    onClick={handleSignOut}
-                    className="block w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50/50 transition-colors duration-200"
-                  >
-                    Sign Out
-                  </button>
-                </div>
-              ) : (
-                <div className="pt-4 border-t border-red-100 space-y-2">
-                  <Link
-                    to="/auth/login"
-                    className="block px-4 py-3 rounded-lg text-sm font-medium text-slate-700 hover:text-red-600 hover:bg-red-50/50 transition-colors duration-200"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    to="/auth/register"
-                    className="block px-4 py-3 rounded-lg text-sm font-medium bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 transition-all duration-200"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Get Started
-                  </Link>
-                </div>
-              )}
-            </div>
+                <Link
+                  to="/register"
+                  className="mobile-menu-signup mobile-menu-item"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Get Started
+                </Link>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </nav>
 
       {/* Main Content */}
       <main className="flex-1">
-        {children}
+        <Outlet />
       </main>
 
-      {/* Footer */}
-      <footer className="bg-slate-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* Premium Footer */}
+      <footer className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-dental-600/5 to-transparent"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="col-span-1 md:col-span-2">
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">D</span>
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="navbar-logo-icon">
+                  <span className="text-white font-bold text-lg">DR</span>
                 </div>
-                <span className="text-xl font-bold">DentalHub</span>
+                <span className="text-2xl font-bold text-white">DentalReach</span>
               </div>
-              <p className="text-slate-400 mb-4 max-w-md">
-                Connecting dental professionals worldwide through knowledge sharing, 
-                collaboration, and continuous learning.
+              <p className="text-slate-300 mb-6 max-w-md leading-relaxed">
+                Empowering dental professionals worldwide through knowledge sharing, 
+                collaboration, and continuous learning in the digital age.
               </p>
+              <div className="flex space-x-4">
+                <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
+                  <span className="text-white">📧</span>
+                </div>
+                <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
+                  <span className="text-white">🐦</span>
+                </div>
+                <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
+                  <span className="text-white">💼</span>
+                </div>
+              </div>
             </div>
             
             <div>
-              <h3 className="font-semibold mb-4">Platform</h3>
-              <ul className="space-y-2 text-slate-400">
-                <li><Link to="/articles" className="hover:text-white transition-colors">Articles</Link></li>
-                <li><Link to="/professors" className="hover:text-white transition-colors">Professors</Link></li>
-                <li><Link to="/events" className="hover:text-white transition-colors">Events</Link></li>
-                <li><Link to="/forum" className="hover:text-white transition-colors">Forum</Link></li>
+              <h3 className="font-bold text-white mb-4">Platform</h3>
+              <ul className="space-y-3 text-slate-300">
+                <li><Link to="/articles" className="hover:text-white transition-colors hover:translate-x-1 transform duration-200 block">Articles & Research</Link></li>
+                <li><Link to="/dentists" className="hover:text-white transition-colors hover:translate-x-1 transform duration-200 block">Expert Dentists</Link></li>
+                <li><Link to="/events" className="hover:text-white transition-colors hover:translate-x-1 transform duration-200 block">Events & Webinars</Link></li>
+                <li><Link to="/forum" className="hover:text-white transition-colors hover:translate-x-1 transform duration-200 block">Community Forum</Link></li>
+                <li><Link to="/jobs" className="hover:text-white transition-colors hover:translate-x-1 transform duration-200 block">Career Opportunities</Link></li>
               </ul>
             </div>
             
             <div>
-              <h3 className="font-semibold mb-4">Support</h3>
-              <ul className="space-y-2 text-slate-400">
-                <li><Link to="/about" className="hover:text-white transition-colors">About</Link></li>
-                <li><Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
-                <li><a href="mailto:support@dentalhub.com" className="hover:text-white transition-colors">Contact</a></li>
+              <h3 className="font-bold text-white mb-4">Support</h3>
+              <ul className="space-y-3 text-slate-300">
+                <li><Link to="/about" className="hover:text-white transition-colors hover:translate-x-1 transform duration-200 block">About Us</Link></li>
+                <li><Link to="/privacy" className="hover:text-white transition-colors hover:translate-x-1 transform duration-200 block">Privacy Policy</Link></li>
+                <li><a href="mailto:support@dentalreach.com" className="hover:text-white transition-colors hover:translate-x-1 transform duration-200 block">Contact Support</a></li>
+                <li><Link to="/help" className="hover:text-white transition-colors hover:translate-x-1 transform duration-200 block">Help Center</Link></li>
               </ul>
             </div>
           </div>
           
-          <div className="border-t border-slate-800 mt-8 pt-8 text-center text-slate-400">
-            <p>&copy; 2024 DentalHub. All rights reserved.</p>
+          <div className="border-t border-slate-700/50 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+            <p className="text-slate-400 text-sm">
+              &copy; 2025 DentalReach. All rights reserved. Built with ❤️ for dental professionals.
+            </p>
+            <div className="flex items-center space-x-6 mt-4 md:mt-0">
+              <span className="text-slate-400 text-sm">Made with modern web technologies</span>
+            </div>
           </div>
         </div>
       </footer>
     </div>
   );
-}
+};
+
+export default Layout;

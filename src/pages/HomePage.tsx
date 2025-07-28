@@ -1,5 +1,5 @@
 import { motion, animate } from 'framer-motion';
-import { ChevronRight, BookOpen, Globe, Award, Calendar, Link, Users, ShoppingBag, Building2 } from 'lucide-react';
+import { ChevronRight, BookOpen, Globe, Award, Calendar, Users, ShoppingBag, Building2 } from 'lucide-react';
 import { Link as RouterLink } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
@@ -142,14 +142,19 @@ const HomePage = () => {
                 {!isAuthenticated && (
                   <RouterLink
                     to="/register"
-                    className="btn btn-primary btn-lg"
+                    className="btn btn-primary btn-lg group"
                   >
-                    <span className="btn-text">Join DentalReach</span>
+                    <span className="btn-text flex items-center">
+                      Join DentalReach
+                      <ChevronRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
+                    </span>
                   </RouterLink>
                 )}
-                <RouterLink to="/articles" className="link-elegant group flex items-center text-dental-600 font-medium text-lg">
+                <RouterLink to="/articles" className="btn btn-secondary btn-lg group">
+                  <span className="btn-text flex items-center">
                   Explore Articles
                   <ChevronRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />
+                  </span>
                 </RouterLink>
               </div>
             </motion.div>
